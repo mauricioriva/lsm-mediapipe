@@ -1,1 +1,4 @@
-# lsm-mediapipe
+LSM MediaPipe
+=============
+
+- Hand Detection
