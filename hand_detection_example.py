@@ -8,7 +8,7 @@ def main():
   mp_drawing_styles = mp.solutions.drawing_styles
   mp_hands = mp.solutions.hands
   # input
-  cap = cv2.VideoCapture('https://r1---sn-9gv7enek.googlevideo.com/videoplayback?expire=1632362290&ei=0opLYeXdN9Gw2_gP9q6YgAM&ip=189.217.10.25&id=o-ANjZcCZNnmgPkIP48XAoQqkcn5F4NoCKnOdeUUPbqmkV&itag=22&source=youtube&requiressl=yes&vprv=1&mime=video%2Fmp4&ns=nA8octP7VXehUrCR7NuB4l8G&cnr=14&ratebypass=yes&dur=90.975&lmt=1579996493225742&fexp=24001373,24007246&c=WEB&txp=1306222&n=Z06NDK6nIcR_gGQm&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cvprv%2Cmime%2Cns%2Ccnr%2Cratebypass%2Cdur%2Clmt&sig=AOq0QJ8wRgIhAMN_lXxiqONlpxf5TZl2B7yimIWTi-vN8EvRH4_nbgZOAiEArSmN6JIJpRYEu-t1B-GsHKHVr4JNm0Y5I8pubVOrl5A%3D&redirect_counter=1&cm2rm=sn-j5cax8pnpvohm-hxmz7k&req_id=bfa1716aad98a3ee&cms_redirect=yes&mh=pu&mm=29&mn=sn-9gv7enek&ms=rdu&mt=1632341356&mv=m&mvi=1&pl=22&lsparams=mh,mm,mn,ms,mv,mvi,pl&lsig=AG3C_xAwRQIgUYu5ee762knmkRf-D1TeBNEJo7y689k2NDRI-AEVRuoCIQCLgNLEz-2h0-p1G2jo1oaEM5oG0ZQwUfuw30xko1MsUQ%3D%3D')
+  cap = cv2.VideoCapture('Video URL')
   frame_width = int(cap.get(3))
   frame_height = int(cap.get(4))
   # output
