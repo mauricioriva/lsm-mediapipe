@@ -20,6 +20,15 @@ class Landmark:
   def get_z(self):
     return self.z
 
+  def set_x(self,x):
+    self.x = x
+
+  def set_y(self,y):
+    self.y = y
+
+  def set_z(self,z):
+    self.z = z
+
   def extract_coords(mediapipe_hand_landmarks):
     landmarks = []
     for i in range(0,21):

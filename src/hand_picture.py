@@ -1,15 +1,21 @@
+import sys
+
 import cv2
 import mediapipe as mp
 
 import hand as hd
 import hand_plot as hd_plt
 
+if len(sys.argv) != 2:
+  print('Error en los argumentos')
+  quit()
+
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands
 
 # For static images:
-IMAGE_FILES = ['hand1.jpg']
+IMAGE_FILES = [sys.argv[1]]
 with mp_hands.Hands(
     static_image_mode=True,
     max_num_hands=1,

@@ -1,3 +1,4 @@
+from unicodedata import name
 import matplotlib.pyplot as plt
 import numpy as np
 import plotly.graph_objects as go
@@ -14,6 +15,14 @@ class HandPlot:
             y=[lm.get_y()], 
             z=[lm.get_z()]
           ))
+
+  def plot_landmark(self, landmark, tag):
+    self.plotly_fig.add_trace(go.Scatter3d(
+          x=[landmark.get_x()], 
+          y=[landmark.get_y()], 
+          z=[landmark.get_z()],
+          name=tag
+        ))
 
   def plot_fingers_relation(self):
     landmarks = []
@@ -36,8 +45,22 @@ class HandPlot:
           mode="lines"
         ))
 
+  def plot_area(self):
+    for (a,b) in self.hand.area:
+      self.plotly_fig.add_trace(go.Scatter3d(
+          x=[a.get_x(),b.get_x()], 
+          y=[a.get_y(),b.get_y()], 
+          z=[a.get_z(),b.get_z()], 
+          mode="lines"
+        ))
+
   def plot(self):
+    #self.plot_landmark(self.hand.get_promedio_aritmetico(), 'promedio aritmetico')
+    #self.plot_landmark(self.hand.get_promedio_geometrico(), 'promedio geometrico')
+
+
     self.plot_landmarks()
+    #self.plot_area()
     self.plot_fingers_relation()
     self.plot_palm_relation()
     self.plotly_fig.show()
