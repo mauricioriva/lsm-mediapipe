@@ -88,8 +88,8 @@ class Hand:
     for landmark in landmarks:
       new_landmarks.append(
         lm.Landmark(
-          landmark.get_x() - landmarks[0].get_x(), 
-          landmark.get_y() - landmarks[0].get_y(), 
-          landmark.get_z() - landmarks[0].get_z()
+          (landmark.get_x() - landmarks[0].get_x()) * -1, 
+          (landmark.get_y() - landmarks[0].get_y()) * -1, 
+          (landmark.get_z() - landmarks[0].get_z()) * -1
           ))
     return new_landmarks
