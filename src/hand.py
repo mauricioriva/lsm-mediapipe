@@ -12,6 +12,7 @@ class Hand:
     self.base = self.landmarks[0]
     self.palm = self.construct_palm()
     self.area = self.construct_area()
+    self.m_distance = self.matrix_distance()
 
   def construct_palm(self):
     return [
@@ -93,3 +94,23 @@ class Hand:
           (landmark.get_z() - landmarks[0].get_z()) * -1
           ))
     return new_landmarks
+
+  def matrix_distance(self):
+    md = []
+    for i in range (0,21):
+      row = []
+      for j in range (0,21):
+        row.append(0)
+      md.append(row)
+    for i in range(len(md)):
+      for j in range(len(md[i])):
+        md[i][j] = self.formula_distancia(
+          self.landmarks[i].get_x(), self.landmarks[i].get_y(), self.landmarks[i].get_z(),
+          self.landmarks[j].get_x(), self.landmarks[j].get_y(), self.landmarks[j].get_z()
+        )
+    return md
+
+  def formula_distancia(self,x_1,y_1,z_1,x_2,y_2,z_2):
+    return round(math.sqrt(
+      (x_1 - x_2)**2 + (y_1 - y_2)**2 + (z_1 - z_2)**2
+    ), 3)
