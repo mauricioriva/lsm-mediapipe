@@ -1,4 +1,5 @@
 import math
+import pandas as pd
 
 import landmark as lm
 import finger as fn
@@ -13,6 +14,8 @@ class Hand:
     self.palm = self.construct_palm()
     self.area = self.construct_area()
     self.m_distance = self.matrix_distance()
+    self.m_corr = self.correlation_matrix()
+    self.save_correlation_matrix()
 
   def construct_palm(self):
     return [
@@ -114,3 +117,9 @@ class Hand:
     return round(math.sqrt(
       (x_1 - x_2)**2 + (y_1 - y_2)**2 + (z_1 - z_2)**2
     ), 3)
+
+  def correlation_matrix(self):
+    return pd.DataFrame(self.m_distance).corr()
+
+  def save_correlation_matrix(self):
+    self.m_corr.to_csv('correlacion.csv')
