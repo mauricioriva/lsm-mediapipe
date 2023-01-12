@@ -54,6 +54,28 @@ class HandPlot:
           mode="lines"
         ))
 
+  def plot_bezier_fingers(self):
+    for finger in self.hand.fingers:
+      landmarks = self.hand.fingers[finger].get_landmarks()
+      (curve1, points1) = self.hand.bezier(landmarks)
+      self.plotly_fig.add_traces(go.Scatter3d(
+          x=curve1[:, 0],
+          y=curve1[:, 1],
+          z=curve1[:, 2],
+          mode="lines",
+        ))
+
+  def plot_horizontal_curves(self):
+    for i in range(1,5):
+      (curve1, points1) = self.hand.bezier(
+        [self.hand.landmarks[index] for index in [i,i+4,i+8,i+12,i+16]])
+      self.plotly_fig.add_traces(go.Scatter3d(
+          x=curve1[:, 0],
+          y=curve1[:, 1],
+          z=curve1[:, 2],
+          mode="lines",
+        ))
+  
   def plot(self):
     #self.plot_landmark(self.hand.get_promedio_aritmetico(), 'promedio aritmetico')
     #self.plot_landmark(self.hand.get_promedio_geometrico(), 'promedio geometrico')
@@ -63,4 +85,8 @@ class HandPlot:
     #self.plot_area()
     self.plot_fingers_relation()
     self.plot_palm_relation()
+    self.plot_bezier_fingers()
+    self.plot_horizontal_curves()
+
+    #PLOT
     self.plotly_fig.show()

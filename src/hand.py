@@ -1,6 +1,9 @@
 import math
 import pandas as pd
 
+from Bezier import Bezier
+import numpy as np
+
 import landmark as lm
 import finger as fn
 import hand_plot as hp
@@ -123,3 +126,12 @@ class Hand:
 
   def save_correlation_matrix(self):
     self.m_corr.to_csv('correlacion.csv')
+
+  def bezier(self, points):
+    t_points = np.arange(0, 1, 0.01)
+    array_points = []
+    for p in points:
+      array_points.append(p.get_landmarks_array())
+    points1 = np.array(array_points)
+    curve1 = Bezier.Curve(t_points, points1)
+    return (curve1, points1)

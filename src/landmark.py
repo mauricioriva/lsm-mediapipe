@@ -11,6 +11,9 @@ class Landmark:
       'z': self.z
     }
 
+  def get_landmarks_array(self):
+    return [self.x, self.y, self.z]
+
   def get_x(self):
     return self.x
 
