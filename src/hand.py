@@ -43,10 +43,10 @@ class Hand:
       (self.landmarks[8], self.landmarks[12]),
       (self.landmarks[12], self.landmarks[16]),
       (self.landmarks[16], self.landmarks[20]),
-      (self.landmarks[0], self.landmarks[17]),
-      (self.landmarks[17], self.landmarks[18]),
-      (self.landmarks[18], self.landmarks[19]),
-      (self.landmarks[19], self.landmarks[20])
+      (self.landmarks[20], self.landmarks[19]),
+      (self.landmarks[19], self.landmarks[18]),
+      (self.landmarks[18], self.landmarks[17]),
+      (self.landmarks[17], self.landmarks[0])
     ]
 
   def construct_fingers(self):
@@ -144,7 +144,7 @@ class Hand:
 
   def bezier_triangle_plot_2d(self, points):
     nodes2d = np.asfortranarray(lm.Landmark.separate_coords_only_xy(points))
-    triangle = bezier.Triangle(nodes2d, degree=5)
+    triangle = bezier.Triangle(nodes2d, degree=2)
     return triangle
 
   def bezier_curve_features(self, points): # points = [landmark,landmark,landmark,...]
@@ -161,3 +161,10 @@ class Hand:
     length2d = curve2d.length
     matrix2d = curve2d.to_symbolic()
     implicitize2d = curve2d.implicitize()
+    ## Triangle
+    print('Triangle')
+    nodes2d = np.asfortranarray(lm.Landmark.separate_coords_only_xy(points))
+    triangle = bezier.Triangle(nodes2d, degree=2)
+    area = triangle.area
+    matrix = triangle.to_symbolic()
+    implicitize = triangle.implicitize()

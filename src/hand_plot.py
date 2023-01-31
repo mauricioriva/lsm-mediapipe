@@ -101,8 +101,15 @@ class HandPlot:
       curve2d.plot(256, ax=self.matplotax)
 
   def plot_bezier_triangle_2d(self):
-    triangle = self.hand.bezier_triangle_plot_2d(self.hand.landmarks)
-    triangle.plot(5,ax=self.matplotax)
+    points = []
+    points.append(self.hand.landmarks[0])
+    points.append(self.hand.landmarks[4])
+    points.append(self.hand.landmarks[8])
+    points.append(self.hand.landmarks[12])
+    points.append(self.hand.landmarks[16])
+    points.append(self.hand.landmarks[20])
+    triangle = self.hand.bezier_triangle_plot_2d(points)
+    triangle.plot(25,ax=self.matplotax)
   
   def plot(self):
     #self.plot_landmark(self.hand.get_promedio_aritmetico(), 'promedio aritmetico')

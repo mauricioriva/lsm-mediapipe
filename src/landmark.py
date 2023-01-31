@@ -59,4 +59,3 @@ class Landmark:
       x_coords.append(landmark.get_x())
       y_coords.append(landmark.get_y())
     return [ x_coords, y_coords ]
-
