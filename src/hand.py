@@ -1,7 +1,8 @@
 import math
 import pandas as pd
 
-from Bezier import Bezier
+from Bezier import Bezier #plot
+import bezier #features
 import numpy as np
 
 import landmark as lm
@@ -127,11 +128,36 @@ class Hand:
   def save_correlation_matrix(self):
     self.m_corr.to_csv('correlacion.csv')
 
-  def bezier(self, points):
+  def bezier_plot_3d(self, points):
     t_points = np.arange(0, 1, 0.01)
     array_points = []
     for p in points:
       array_points.append(p.get_landmarks_array())
     points1 = np.array(array_points)
-    curve1 = Bezier.Curve(t_points, points1)
-    return (curve1, points1)
+    curve3d = Bezier.Curve(t_points, points1)
+    return curve3d
+
+  def bezier_plot_2d(self, points):
+    nodes2d = np.asfortranarray(lm.Landmark.separate_coords_only_xy(points))
+    curve2d = bezier.Curve.from_nodes(nodes2d)
+    return curve2d
+
+  def bezier_triangle_plot_2d(self, points):
+    nodes2d = np.asfortranarray(lm.Landmark.separate_coords_only_xy(points))
+    triangle = bezier.Triangle(nodes2d, degree=5)
+    return triangle
+
+  def bezier_curve_features(self, points): # points = [landmark,landmark,landmark,...]
+    ## 3D
+    print('3D')
+    nodes = np.asfortranarray(lm.Landmark.separate_coords(points))
+    curve = bezier.Curve(nodes, 3)
+    length = curve.length
+    matrix = curve.to_symbolic()
+    ## 2D
+    print('2D')
+    nodes2d = np.asfortranarray(lm.Landmark.separate_coords_only_xy(points))
+    curve2d = bezier.Curve(nodes2d, 2)
+    length2d = curve2d.length
+    matrix2d = curve2d.to_symbolic()
+    implicitize2d = curve2d.implicitize()

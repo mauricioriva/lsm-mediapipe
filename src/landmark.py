@@ -41,3 +41,22 @@ class Landmark:
           mediapipe_hand_landmarks.landmark[i].z,
           ))
     return landmarks
+
+  def separate_coords(landmarks_array):
+    x_coords = []
+    y_coords = []
+    z_coords = []
+    for landmark in landmarks_array:
+      x_coords.append(landmark.get_x())
+      y_coords.append(landmark.get_y())
+      z_coords.append(landmark.get_z())
+    return [ x_coords, y_coords, z_coords ]
+
+  def separate_coords_only_xy(landmarks_array):
+    x_coords = []
+    y_coords = []
+    for landmark in landmarks_array:
+      x_coords.append(landmark.get_x())
+      y_coords.append(landmark.get_y())
+    return [ x_coords, y_coords ]
+

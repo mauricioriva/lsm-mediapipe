@@ -7,6 +7,9 @@ class HandPlot:
   def __init__(self, hand):
     self.hand = hand
     self.plotly_fig = go.Figure()
+    #Matplot
+    self.matplotfig = plt.figure(figsize=(10,10))
+    self.matplotax = self.matplotfig.add_subplot(111)
 
   def plot_landmarks(self):
     for lm in self.hand.landmarks:
@@ -15,6 +18,8 @@ class HandPlot:
             y=[lm.get_y()], 
             z=[lm.get_z()]
           ))
+      #Matplot
+      self.matplotax.scatter(lm.get_x(),lm.get_y())
 
   def plot_landmark(self, landmark, tag):
     self.plotly_fig.add_trace(go.Scatter3d(
@@ -23,6 +28,8 @@ class HandPlot:
           z=[landmark.get_z()],
           name=tag
         ))
+    #Matplot
+    self.matplotax.scatter(landmark.get_x(),landmark.get_y())
 
   def plot_fingers_relation(self):
     landmarks = []
@@ -35,6 +42,11 @@ class HandPlot:
             z=[landmarks[i].get_z(),landmarks[i+1].get_z()], 
             mode="lines"
           ))
+        #Matplot
+        self.matplotax.plot(
+            np.linspace(landmarks[i].get_x(),landmarks[i+1].get_x()),
+            np.linspace(landmarks[i].get_y(),landmarks[i+1].get_y())
+          )
 
   def plot_palm_relation(self):
     for (a,b) in self.hand.palm:
@@ -44,6 +56,11 @@ class HandPlot:
           z=[a.get_z(),b.get_z()], 
           mode="lines"
         ))
+      #Matplot
+      self.matplotax.plot(
+          np.linspace(a.get_x(),b.get_x()),
+          np.linspace(a.get_y(),b.get_y())
+        )
 
   def plot_area(self):
     for (a,b) in self.hand.area:
@@ -57,29 +74,39 @@ class HandPlot:
   def plot_bezier_fingers(self):
     for finger in self.hand.fingers:
       landmarks = self.hand.fingers[finger].get_landmarks()
-      (curve1, points1) = self.hand.bezier(landmarks)
+      curve3d = self.hand.bezier_plot_3d(landmarks)
       self.plotly_fig.add_traces(go.Scatter3d(
-          x=curve1[:, 0],
-          y=curve1[:, 1],
-          z=curve1[:, 2],
+          x=curve3d[:, 0],
+          y=curve3d[:, 1],
+          z=curve3d[:, 2],
           mode="lines",
         ))
+      #Matplot
+      curve2d = self.hand.bezier_plot_2d(landmarks)
+      curve2d.plot(256, ax=self.matplotax)
 
   def plot_horizontal_curves(self):
     for i in range(1,5):
-      (curve1, points1) = self.hand.bezier(
+      curve3d = self.hand.bezier_plot_3d(
         [self.hand.landmarks[index] for index in [i,i+4,i+8,i+12,i+16]])
       self.plotly_fig.add_traces(go.Scatter3d(
-          x=curve1[:, 0],
-          y=curve1[:, 1],
-          z=curve1[:, 2],
+          x=curve3d[:, 0],
+          y=curve3d[:, 1],
+          z=curve3d[:, 2],
           mode="lines",
         ))
+      #Matplot
+      curve2d = self.hand.bezier_plot_2d(
+        [self.hand.landmarks[index] for index in [i,i+4,i+8,i+12,i+16]])
+      curve2d.plot(256, ax=self.matplotax)
+
+  def plot_bezier_triangle_2d(self):
+    triangle = self.hand.bezier_triangle_plot_2d(self.hand.landmarks)
+    triangle.plot(5,ax=self.matplotax)
   
   def plot(self):
     #self.plot_landmark(self.hand.get_promedio_aritmetico(), 'promedio aritmetico')
     #self.plot_landmark(self.hand.get_promedio_geometrico(), 'promedio geometrico')
-
 
     self.plot_landmarks()
     #self.plot_area()
@@ -88,5 +115,11 @@ class HandPlot:
     self.plot_bezier_fingers()
     self.plot_horizontal_curves()
 
+    #Matplot
+    self.plot_bezier_triangle_2d()
+
     #PLOT
     self.plotly_fig.show()
+
+    #Matplot
+    plt.show()
