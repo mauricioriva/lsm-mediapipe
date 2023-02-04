@@ -103,11 +103,11 @@ class HandPlot:
   def plot_bezier_triangle_2d(self):
     points = []
     points.append(self.hand.landmarks[0])
-    points.append(self.hand.landmarks[4])
-    points.append(self.hand.landmarks[8])
-    points.append(self.hand.landmarks[12])
-    points.append(self.hand.landmarks[16])
     points.append(self.hand.landmarks[20])
+    points.append(self.hand.landmarks[16])
+    points.append(self.hand.landmarks[12])
+    points.append(self.hand.landmarks[8])
+    points.append(self.hand.landmarks[4])    
     triangle = self.hand.bezier_triangle_plot_2d(points)
     triangle.plot(25,ax=self.matplotax)
   

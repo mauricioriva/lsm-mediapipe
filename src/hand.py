@@ -147,24 +147,62 @@ class Hand:
     triangle = bezier.Triangle(nodes2d, degree=2)
     return triangle
 
-  def bezier_curve_features(self, points): # points = [landmark,landmark,landmark,...]
-    ## 3D
-    print('3D')
-    nodes = np.asfortranarray(lm.Landmark.separate_coords(points))
-    curve = bezier.Curve(nodes, 3)
-    length = curve.length
-    matrix = curve.to_symbolic()
-    ## 2D
-    print('2D')
-    nodes2d = np.asfortranarray(lm.Landmark.separate_coords_only_xy(points))
-    curve2d = bezier.Curve(nodes2d, 2)
-    length2d = curve2d.length
-    matrix2d = curve2d.to_symbolic()
-    implicitize2d = curve2d.implicitize()
-    ## Triangle
-    print('Triangle')
-    nodes2d = np.asfortranarray(lm.Landmark.separate_coords_only_xy(points))
-    triangle = bezier.Triangle(nodes2d, degree=2)
-    area = triangle.area
-    matrix = triangle.to_symbolic()
-    implicitize = triangle.implicitize()
+  def bezier_curve_3d(self, landmarks): #point type Landmark
+    nodes = np.asfortranarray(lm.Landmark.separate_coords(landmarks))
+    curve = bezier.Curve.from_nodes(nodes)
+    return curve
+
+  def bezier_curve_2d(self, landmarks): #point type Landmark
+    nodes = np.asfortranarray(lm.Landmark.separate_coords_only_xy(landmarks))
+    curve = bezier.Curve.from_nodes(nodes)
+    return curve
+
+  def bezier_triangle_2d(self,landmarks):
+    nodes = np.asfortranarray(lm.Landmark.separate_coords_only_xy(landmarks))
+    triangle = bezier.Triangle(nodes, degree=2)
+    return triangle
+
+  def bezier_triangle_3d(self,landmarks):
+    nodes = np.asfortranarray(lm.Landmark.separate_coords(landmarks))
+    triangle = bezier.Triangle(nodes, degree=2)
+    return triangle
+
+  def bezier_curve_features(self): # points = [landmark,landmark,landmark,...]
+    features = []
+    for l in self.landmarks:
+      features.append(l.get_x())
+      features.append(l.get_y())
+      features.append(l.get_z())
+    for finger in self.fingers: #Finger Curves
+      landmarks = self.fingers[finger].get_landmarks()
+      #3D
+      curve3d = self.bezier_curve_3d(landmarks)
+      features.append(curve3d.length)
+      features.append(curve3d.to_symbolic()) #Matrix
+      #2D
+      curve2d = self.bezier_curve_2d(landmarks)
+      features.append(curve2d.length)
+      features.append(curve2d.to_symbolic()) #Matrix
+      features.append(curve2d.implicitize()) #Implicitize
+    for i in range(1,5): #Horizontal Curves
+      landmarks = [self.landmarks[index] for index in [i,i+4,i+8,i+12,i+16]]
+      #3D
+      curve3d = self.bezier_curve_3d(landmarks)
+      features.append(curve3d.length)
+      features.append(curve3d.to_symbolic()) #Matrix
+      #2D
+      curve2d = self.bezier_curve_2d(landmarks)
+      features.append(curve2d.length)
+      features.append(curve2d.to_symbolic()) #Matrix
+      features.append(curve2d.implicitize()) #Implicitize
+    #Triangle 2D
+    landmarks = [self.landmarks[index] for index in [0,20,16,12,8,4]]    
+    triangle2d = self.bezier_triangle_2d(landmarks)
+    features.append(triangle2d.area)
+    features.append(triangle2d.to_symbolic()) #Matrix
+    #Triangle 3D
+    landmarks = [self.landmarks[index] for index in [0,20,16,12,8,4]]    
+    triangle3d = self.bezier_triangle_3d(landmarks)
+    features.append(triangle3d.to_symbolic()) #Matrix
+    features.append(triangle3d.implicitize()) #Implicitize
+    return features

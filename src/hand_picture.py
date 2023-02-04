@@ -29,4 +29,5 @@ with mp_hands.Hands(
     if results.multi_hand_landmarks:
       for hand_landmarks in results.multi_hand_landmarks:
         hand = hd.Hand(hand_landmarks)
-        hd_plt.HandPlot(hand).plot()
+        print(hand.bezier_curve_features())
+        #hd_plt.HandPlot(hand).plot() #PLOT
