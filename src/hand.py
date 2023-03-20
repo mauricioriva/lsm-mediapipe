@@ -7,7 +7,7 @@ import numpy as np
 
 import landmark as lm
 import finger as fn
-import hand_plot as hp
+import bezier_curve as bz
 
 class Hand:
   def __init__(self,mediapipe_hand_landmarks):
@@ -63,34 +63,6 @@ class Hand:
       i = i+4
     return fingers_dict
 
-  def get_promedio_aritmetico(self):
-    x = []
-    y = []
-    z = []
-    for landmark in self.landmarks:
-      x.append(landmark.get_x())
-      y.append(landmark.get_y())
-      z.append(landmark.get_z())
-    return lm.Landmark(
-      sum(x) / len(x),
-      sum(y) / len(y),
-      sum(z) / len(z)
-    )
-
-  def get_promedio_geometrico(self):
-    x = []
-    y = []
-    z = []
-    for landmark in self.landmarks:
-      x.append(landmark.get_x())
-      y.append(landmark.get_y())
-      z.append(landmark.get_z())
-    return lm.Landmark(
-      math.prod(x) ** (1/len(x)),
-      math.prod(y) ** (1/len(y)),
-      math.prod(z) ** (1/len(z))
-    )
-
   def linear_transformation_origin(landmarks):
     new_landmarks = []
     for landmark in landmarks:
@@ -102,25 +74,23 @@ class Hand:
           ))
     return new_landmarks
 
+  # De la base a todos los demas
+  # Las puntas de los dedos y la base
   def matrix_distance(self):
     md = []
-    for i in range (0,21):
-      row = []
-      for j in range (0,21):
-        row.append(0)
-      md.append(row)
-    for i in range(len(md)):
-      for j in range(len(md[i])):
-        md[i][j] = self.formula_distancia(
-          self.landmarks[i].get_x(), self.landmarks[i].get_y(), self.landmarks[i].get_z(),
-          self.landmarks[j].get_x(), self.landmarks[j].get_y(), self.landmarks[j].get_z()
-        )
+    for l in self.landmarks:
+      md.append(self.formula_distancia(0, 0, 0, l.get_x(), l.get_y(), l.get_z()))
+    md.pop(0)
+    landmark_pairs = [(4, 8), (4, 12), (4, 16), (4, 20), (8, 12), (8, 16), (8, 20), (12, 16), (12, 20), (16, 20)]
+    md.extend([self.formula_distancia(self.landmarks[a].get_x(), self.landmarks[a].get_y(), self.landmarks[a].get_z(),
+                                      self.landmarks[b].get_x(), self.landmarks[b].get_y(), self.landmarks[b].get_z())
+                    for a, b in landmark_pairs])
     return md
 
   def formula_distancia(self,x_1,y_1,z_1,x_2,y_2,z_2):
     return round(math.sqrt(
       (x_1 - x_2)**2 + (y_1 - y_2)**2 + (z_1 - z_2)**2
-    ), 3)
+    ), 5)
 
   def correlation_matrix(self):
     return pd.DataFrame(self.m_distance).corr()
@@ -175,34 +145,20 @@ class Hand:
       features.append(l.get_z())
     for finger in self.fingers: #Finger Curves
       landmarks = self.fingers[finger].get_landmarks()
-      #3D
+      curvature = bz.BezierCurve(landmarks).get_curvature()
+      features.append(float(round(curvature,5)))
       curve3d = self.bezier_curve_3d(landmarks)
-      features.append(curve3d.length)
-      features.append(curve3d.to_symbolic()) #Matrix
-      #2D
-      curve2d = self.bezier_curve_2d(landmarks)
-      features.append(curve2d.length)
-      features.append(curve2d.to_symbolic()) #Matrix
-      features.append(curve2d.implicitize()) #Implicitize
+      features.append(float(round(curve3d.length,5)))
     for i in range(1,5): #Horizontal Curves
-      landmarks = [self.landmarks[index] for index in [i,i+4,i+8,i+12,i+16]]
-      #3D
+      landmarks = [self.landmarks[index] for index in [i+4,i+8,i+12,i+16]]
+      curvature = bz.BezierCurve(landmarks).get_curvature()
+      features.append(float(round(curvature,5)))
       curve3d = self.bezier_curve_3d(landmarks)
-      features.append(curve3d.length)
-      features.append(curve3d.to_symbolic()) #Matrix
-      #2D
-      curve2d = self.bezier_curve_2d(landmarks)
-      features.append(curve2d.length)
-      features.append(curve2d.to_symbolic()) #Matrix
-      features.append(curve2d.implicitize()) #Implicitize
+      features.append(float(round(curve3d.length,5)))
     #Triangle 2D
     landmarks = [self.landmarks[index] for index in [0,20,16,12,8,4]]    
     triangle2d = self.bezier_triangle_2d(landmarks)
-    features.append(triangle2d.area)
-    features.append(triangle2d.to_symbolic()) #Matrix
-    #Triangle 3D
-    landmarks = [self.landmarks[index] for index in [0,20,16,12,8,4]]    
-    triangle3d = self.bezier_triangle_3d(landmarks)
-    features.append(triangle3d.to_symbolic()) #Matrix
-    features.append(triangle3d.implicitize()) #Implicitize
+    features.append(float(round(triangle2d.area,5)))
+    #Matrix Distance
+    features.extend(self.matrix_distance())
     return features

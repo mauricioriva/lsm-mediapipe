@@ -1,8 +1,8 @@
 class Landmark:
   def __init__(self, x, y, z):
-    self.x = x
-    self.y = y
-    self.z = z
+    self.x = float(round(x,5))
+    self.y = float(round(y,5))
+    self.z = float(round(z,5))
 
   def get_landmarks(self):
     return {
@@ -10,6 +10,9 @@ class Landmark:
       'y': self.y,
       'z': self.z
     }
+
+  def get_tuple(self):
+    return (self.x, self.y, self.z)
 
   def get_landmarks_array(self):
     return [self.x, self.y, self.z]
