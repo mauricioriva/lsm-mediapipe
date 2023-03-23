@@ -1,7 +1,9 @@
 import sys
+import os
 
 import cv2
 import mediapipe as mp
+import pandas
 
 import hand as hd
 import hand_plot as hd_plt
@@ -14,8 +16,17 @@ mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands
 
+IMAGE_FILES = []
+data_set = pandas.DataFrame()
+c = 1
+
+direc = sys.argv[1]
+for image in os.listdir(direc):
+  f = os.path.join(direc,image)
+  if os.path.isfile(f):
+    IMAGE_FILES.append(f)
+
 # For static images:
-IMAGE_FILES = [sys.argv[1]]
 with mp_hands.Hands(
     static_image_mode=True,
     max_num_hands=1,
@@ -29,6 +40,14 @@ with mp_hands.Hands(
     if results.multi_hand_landmarks:
       for hand_landmarks in results.multi_hand_landmarks:
         hand = hd.Hand(hand_landmarks)
-        print(len(hand.bezier_curve_features()))
+        features = hand.bezier_curve_features()
+        data_set = pandas.concat([data_set, features])
+        print(c)
+        c = c + 1
+        if c == 200:
+          data_set.to_csv('features.csv')
+          exit()
+        
+        #print(len(hand.bezier_curve_features()))
         #print(hand.bezier_curve_features())
         #hd_plt.HandPlot(hand).plot() #PLOT

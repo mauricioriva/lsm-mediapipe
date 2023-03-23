@@ -27,7 +27,7 @@ class BezierCurve:
     return b_td
 
   def get_curvature(self):
-    t = sympy.symbols('t')
+    #t = sympy.symbols('t')
     b_t = self.get_bezier_equation()
     b_td = self.diff_bezier(b_t)
     b_tdd = self.diff_bezier(b_td)
@@ -36,6 +36,8 @@ class BezierCurve:
     k = sympy.sqrt( (z_tdd*y_td - y_tdd*z_td)**2 + 
                                    (x_tdd*z_td - z_tdd*x_td)**2 + 
                                    (y_tdd*x_td - x_tdd*y_td)**2 ) / (x_td**2 + y_td**2 + z_td**2)**(3/2)
+    return k
+    
     t_values = np.linspace(0, 1, 1000)
     curvature_values = []
     for i in t_values:

@@ -4,6 +4,7 @@ import pandas as pd
 from Bezier import Bezier #plot
 import bezier #features
 import numpy as np
+import sympy
 
 import landmark as lm
 import finger as fn
@@ -17,9 +18,9 @@ class Hand:
     self.base = self.landmarks[0]
     self.palm = self.construct_palm()
     self.area = self.construct_area()
-    self.m_distance = self.matrix_distance()
-    self.m_corr = self.correlation_matrix()
-    self.save_correlation_matrix()
+    #self.m_distance = self.matrix_distance()
+    #self.m_corr = self.correlation_matrix()
+    #self.save_correlation_matrix()
 
   def construct_palm(self):
     return [
@@ -77,15 +78,21 @@ class Hand:
   # De la base a todos los demas
   # Las puntas de los dedos y la base
   def matrix_distance(self):
+    labels = []
     md = []
+    c = 0
     for l in self.landmarks:
+      labels.append('d_0_' + str(c))
       md.append(self.formula_distancia(0, 0, 0, l.get_x(), l.get_y(), l.get_z()))
+    labels.pop(0)
     md.pop(0)
     landmark_pairs = [(4, 8), (4, 12), (4, 16), (4, 20), (8, 12), (8, 16), (8, 20), (12, 16), (12, 20), (16, 20)]
+    for (i,j) in landmark_pairs:
+      labels.append('d_' + str(i) + '_' + str(j))
     md.extend([self.formula_distancia(self.landmarks[a].get_x(), self.landmarks[a].get_y(), self.landmarks[a].get_z(),
                                       self.landmarks[b].get_x(), self.landmarks[b].get_y(), self.landmarks[b].get_z())
                     for a, b in landmark_pairs])
-    return md
+    return (md, labels)
 
   def formula_distancia(self,x_1,y_1,z_1,x_2,y_2,z_2):
     return round(math.sqrt(
@@ -138,27 +145,37 @@ class Hand:
     return triangle
 
   def bezier_curve_features(self): # points = [landmark,landmark,landmark,...]
-    features = []
+    features = {}
+    t_values = np.linspace(0, 1, 10)
+    t = sympy.symbols('t')
+    c = 0
     for l in self.landmarks:
-      features.append(l.get_x())
-      features.append(l.get_y())
-      features.append(l.get_z())
+      features['x_' + str(c)] = [l.get_x()]
+      features['y_' + str(c)] = [l.get_y()]
+      features['z_' + str(c)] = [l.get_x()]
+      c = c + 1
     for finger in self.fingers: #Finger Curves
       landmarks = self.fingers[finger].get_landmarks()
-      curvature = bz.BezierCurve(landmarks).get_curvature()
-      features.append(float(round(curvature,5)))
+      k = bz.BezierCurve(landmarks).get_curvature()
+      for i in t_values:
+        features[finger + '_curv_' + str(i)] = [float(round(k.subs(t,i),5))] # Curvature
       curve3d = self.bezier_curve_3d(landmarks)
-      features.append(float(round(curve3d.length,5)))
-    for i in range(1,5): #Horizontal Curves
-      landmarks = [self.landmarks[index] for index in [i+4,i+8,i+12,i+16]]
-      curvature = bz.BezierCurve(landmarks).get_curvature()
-      features.append(float(round(curvature,5)))
+      features[finger + '_length'] = [float(round(curve3d.length,5))]
+    for j in range(1,5): #Horizontal Curves
+      landmarks = [self.landmarks[index] for index in [j+4,j+8,j+12,j+16]]
+      k = bz.BezierCurve(landmarks).get_curvature()
+      for i in t_values:
+        features['h_' + str(j) + '_curv_' + str(i)] = [float(round(k.subs(t,i),5))] # Curvature
       curve3d = self.bezier_curve_3d(landmarks)
-      features.append(float(round(curve3d.length,5)))
+      features['h_' + str(j) + '_length'] = [float(round(curve3d.length,5))]
     #Triangle 2D
     landmarks = [self.landmarks[index] for index in [0,20,16,12,8,4]]    
     triangle2d = self.bezier_triangle_2d(landmarks)
-    features.append(float(round(triangle2d.area,5)))
+    features['triangle_area'] = [float(round(triangle2d.area,5))]
     #Matrix Distance
-    features.extend(self.matrix_distance())
-    return features
+    (md, labels) = self.matrix_distance()
+    c = 0
+    for l in labels:
+      features[l] = [md[c]]
+      c = c+1
+    return pd.DataFrame.from_dict(features)
