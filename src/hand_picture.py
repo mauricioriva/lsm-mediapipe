@@ -8,7 +8,7 @@ import pandas
 import hand as hd
 import hand_plot as hd_plt
 
-if len(sys.argv) != 2:
+if len(sys.argv) != 3:
   print('Error en los argumentos')
   quit()
 
@@ -18,13 +18,20 @@ mp_hands = mp.solutions.hands
 
 IMAGE_FILES = []
 data_set = pandas.DataFrame()
-c = 1
 
 direc = sys.argv[1]
-for image in os.listdir(direc):
-  f = os.path.join(direc,image)
-  if os.path.isfile(f):
-    IMAGE_FILES.append(f)
+for folder in os.listdir(direc):
+  fold = os.path.join(direc,folder)
+  c = 0
+  for image in os.listdir(fold):
+    f = os.path.join(fold,image)
+    if os.path.isfile(f):
+      IMAGE_FILES.append(f)
+      c = c + 1
+      if c == 200:
+        break
+
+print(len(IMAGE_FILES))
 
 # For static images:
 with mp_hands.Hands(
@@ -42,12 +49,10 @@ with mp_hands.Hands(
         hand = hd.Hand(hand_landmarks)
         features = hand.bezier_curve_features()
         data_set = pandas.concat([data_set, features])
-        print(c)
-        c = c + 1
-        if c == 200:
-          data_set.to_csv('features.csv')
-          exit()
+        print(len(data_set.index))
         
         #print(len(hand.bezier_curve_features()))
         #print(hand.bezier_curve_features())
-        #hd_plt.HandPlot(hand).plot() #PLOT
+        hd_plt.HandPlot(hand).plot() #PLOT
+
+data_set.to_csv(sys.argv[2])

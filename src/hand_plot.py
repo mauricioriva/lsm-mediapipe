@@ -119,11 +119,11 @@ class HandPlot:
     #self.plot_area()
     self.plot_fingers_relation()
     self.plot_palm_relation()
-    self.plot_bezier_fingers()
-    self.plot_horizontal_curves()
+    #self.plot_bezier_fingers()
+    #self.plot_horizontal_curves()
 
     #Matplot
-    self.plot_bezier_triangle_2d()
+    #self.plot_bezier_triangle_2d()
 
     #PLOT
     self.plotly_fig.show()
