@@ -157,8 +157,12 @@ class Hand:
     for finger in self.fingers: #Finger Curves
       landmarks = self.fingers[finger].get_landmarks()
       k = bz.BezierCurve(landmarks).get_curvature()
+      (x,y,z) = bz.BezierCurve(landmarks).get_rotation()
       for i in t_values:
         features[finger + '_curv_' + str(i)] = [float(round(k.subs(t,i),5))] # Curvature
+        features[finger + '_rot_x_' + str(i)] = [float(round(x.subs(t,i),5))] # Rotation X
+        features[finger + '_rot_y_' + str(i)] = [float(round(y.subs(t,i),5))] # Rotation Y
+        features[finger + '_rot_z_' + str(i)] = [float(round(z.subs(t,i),5))] # Rotation Z
       curve3d = self.bezier_curve_3d(landmarks)
       features[finger + '_length'] = [float(round(curve3d.length,5))]
     for j in range(1,5): #Horizontal Curves
@@ -166,6 +170,9 @@ class Hand:
       k = bz.BezierCurve(landmarks).get_curvature()
       for i in t_values:
         features['h_' + str(j) + '_curv_' + str(i)] = [float(round(k.subs(t,i),5))] # Curvature
+        features['h_' + str(j) + '_rot_x_' + str(i)] = [float(round(x.subs(t,i),5))] # Rotation X
+        features['h_' + str(j) + '_rot_y_' + str(i)] = [float(round(y.subs(t,i),5))] # Rotation Y
+        features['h_' + str(j) + '_rot_z_' + str(i)] = [float(round(z.subs(t,i),5))] # Rotation Z
       curve3d = self.bezier_curve_3d(landmarks)
       features['h_' + str(j) + '_length'] = [float(round(curve3d.length,5))]
     #Triangle 2D
@@ -177,5 +184,5 @@ class Hand:
     c = 0
     for l in labels:
       features[l] = [md[c]]
-      c = c+1
+      c = c + 1
     return pd.DataFrame.from_dict(features)

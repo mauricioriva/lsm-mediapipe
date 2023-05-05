@@ -38,8 +38,17 @@ class BezierCurve:
                                    (y_tdd*x_td - x_tdd*y_td)**2 ) / (x_td**2 + y_td**2 + z_td**2)**(3/2)
     return k
     
-    t_values = np.linspace(0, 1, 1000)
-    curvature_values = []
-    for i in t_values:
-      curvature_values.append(k.subs(t,i))
-    return max(curvature_values)
+    #t_values = np.linspace(0, 1, 1000)
+    #curvature_values = []
+    #for i in t_values:
+    #  curvature_values.append(k.subs(t,i))
+    #return max(curvature_values)
+  
+  def get_rotation(self):
+    b_t = self.get_bezier_equation()
+    b_td = self.diff_bezier(b_t)
+    (x_td, y_td, z_td) = b_td
+    x = sympy.acos( x_td / sympy.sqrt( (x_td)**2 + (y_td)**2 + (z_td)**2 ) )
+    y = sympy.acos( y_td / sympy.sqrt( (x_td)**2 + (y_td)**2 + (z_td)**2 ) )
+    z = sympy.acos( z_td / sympy.sqrt( (x_td)**2 + (y_td)**2 + (z_td)**2 ) )
+    return (x,y,z)

@@ -48,11 +48,14 @@ with mp_hands.Hands(
       for hand_landmarks in results.multi_hand_landmarks:
         hand = hd.Hand(hand_landmarks)
         features = hand.bezier_curve_features()
+        features['gesture'] = file.split('/')[3][-1]
         data_set = pandas.concat([data_set, features])
         print(len(data_set.index))
         
         #print(len(hand.bezier_curve_features()))
         #print(hand.bezier_curve_features())
-        hd_plt.HandPlot(hand).plot() #PLOT
+        #hd_plt.HandPlot(hand).plot() #PLOT
 
 data_set.to_csv(sys.argv[2])
+
+# python3 src/hand_picture.py ../datasets-tesis/Hagrid/ features_call.csv
