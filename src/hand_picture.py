@@ -48,7 +48,8 @@ with mp_hands.Hands(
       for hand_landmarks in results.multi_hand_landmarks:
         hand = hd.Hand(hand_landmarks)
         features = hand.bezier_curve_features()
-        features['gesture'] = file.split('/')[3][-1]
+        features['handedness'] = int(results.multi_handedness[0].classification[0].label == 'Left')
+        features['gesture'] = file.split('/')[4]
         data_set = pandas.concat([data_set, features])
         print(len(data_set.index))
         
